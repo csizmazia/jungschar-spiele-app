@@ -104,7 +104,7 @@ class GameRepository
             $params[] = (int)$filters['groupsize_min'];
         }
         if (isset($filters['groupsize_max']) && $filters['groupsize_max']) {
-            $and[] = 'anzahl_oben <= %d';
+            $and[] = 'anzahl_oben >= %d';
             $params[] = (int)$filters['groupsize_max'];
         }
         if (isset($filters['type'])) {
