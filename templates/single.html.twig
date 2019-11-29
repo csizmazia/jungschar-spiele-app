@@ -1,0 +1,29 @@
+{% extends "base.html.twig" %}
+
+{% block gameTitle %}
+    - {{ game.Thema }}
+{% endblock %}
+
+{% block body %}
+    <div id="game">
+        <div class="pull-right clearfix"><a href="/zufall" class="btn">Zufälliges Spiel</a></div>
+        <h3>{{ game.Thema }}</h3>
+        <p><strong>Aufwand:</strong> <span class="game-effort-{{ game.Aufwand }}">{{ game.Aufwand }}</span>; <strong>Alter:</strong> {{ game.alter_unten }}
+            - {{ game.alter_oben }}; <strong>Gruppengröße:</strong> {{ game.anzahl_unten }} - {{ game.anzahl_oben }}</p>
+        <hr>
+        <p><strong>Art: </strong>{{ game.Art }}</p>
+        <p>{{ game.Langtext|raw|nl2br }}</p>
+        {% if game.Variante %}
+            <p><strong>Variante: </strong>{{ game.Variante }}</p>
+        {% endif %}
+        {% if game.Material %}
+            <h4>Material</h4>
+            <p>{{ game.Material }}</p>
+        {% endif %}
+        {% if game.Video %}
+            <h4>Video</h4>
+            <iframe width="100%" height="390" src="http://www.youtube.com/embed/{{ game.Video }}" frameborder="0"
+                    allowfullscreen></iframe>
+        {% endif %}
+    </div>
+{% endblock %}

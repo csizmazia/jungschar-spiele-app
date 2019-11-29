@@ -1,3 +1,38 @@
-#index:
-#    path: /
-#    controller: App\Controller\DefaultController::index
+index:
+  path: /
+  methods: ['GET', 'POST']
+  controller: App\Controller\GameController::search
+
+single_game:
+  path: /spiel/{name}
+  methods: ['GET']
+  controller: App\Controller\GameController::game
+
+search:
+  path: /suche
+  methods: ['POST']
+  controller: App\Controller\GameController::search
+
+random:
+  path: /zufall
+  controller: App\Controller\GameController:random
+
+autocomplete:
+  path: /autocomplete
+  methods: ['GET']
+  controller: App\Controller\GameController::autocomplete
+
+imprint:
+  path: /impressum
+  methods: ['GET']
+  controller: App\Controller\StaticPageController::imprint
+
+games_count:
+  path: /_spiele_anzahl.php
+  methods: ['GET']
+  controller: App\Controller\GameController:count
+
+games_xml:
+  path: /_spiele_xml.php
+  methods: ['GET']
+  controller: App\Controller\GameController:export

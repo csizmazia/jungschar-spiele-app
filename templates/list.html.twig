@@ -1,0 +1,142 @@
+{% extends "base.html.twig" %}
+
+{% block body %}
+
+    {% if games is empty %}
+        <div class="alert"><strong>Schade!</strong> Keine Treffer...</div>
+    {% endif %}
+
+    <form method="post" action="/" id="search-form">
+        <div id="search-box">
+            <div class="row-fluid">
+                <div class="span12"><input class="input-block-level" type="text" name="keyword" id="search"
+                                           placeholder="Suchbegriff..." value="{{ search.keyword|default('') }}">
+                </div>
+            </div>
+            <div class="accordion" id="search-box-details">
+                <div class="accordion-group">
+                    <div class="accordion-heading">
+                        <a class="accordion-toggle" data-toggle="collapse" data-parent="#search-box-details"
+                           href="#search-box-details-inputs">Suchoptionen</a>
+                    </div>
+                    <div id="search-box-details-inputs"
+                         class="accordion-body collapse {% if collapseSearchBoxDetails|default(false) %}out{% else %}in{% endif %}">
+                        <div class="accordion-inner">
+                            <div class="row-fluid">
+                                <div class="span1 offset3"><strong>Alter</strong></div>
+                                <div class="span7"><input type="text" class="numbers"
+                                                          name="age_min" id="search-age-min" placeholder="ab"
+                                                          value="{{ search.age_min|default('') }}"></div>
+                            </div>
+                            <div class="row-fluid">
+                                <div class="span1 offset3"><strong>Gruppengröße</strong></div>
+                                <div class="span7"><input type="text" class="numbers" name="groupsize_min"
+                                                          id="search-groupsize-min" placeholder="von"
+                                                          value="{{ search.groupsize_min|default('') }}"> - <input
+                                            type="text"
+                                            class="numbers"
+                                            name="groupsize_max"
+                                            id="search-groupsize-max"
+                                            placeholder="bis"
+                                            value="{{ search.groupsize_max|default('') }}">
+                                </div>
+                            </div>
+                            <div class="row-fluid">
+                                <div class="span1 offset3"><strong>Art</strong></div>
+                                <div class="span7">
+                                    <select style="width:125px;" name="type" id="search-type">
+                                        <option value="" {% if search.type|default('undefined') == 'undefined' %}
+                                            selected="selected"{% endif %}>egal
+                                        </option>
+                                        {% for type in gameTypes %}
+                                            <option value="{{ type }}" {% if search.type|default('') == type %}
+                                                selected="selected"{% endif %}>{{ type }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row-fluid">
+                <div class="span12" style="text-align:center;"><input type="submit" value="Suchen"
+                                                                      class="btn btn-large btn-block"></div>
+            </div>
+        </div>
+    </form>
+
+    <hr>
+
+    {% if showSearchBoxButtons %}
+        <div id="search-box-buttons">
+            <p><a href="/zufall" class="btn">Zufälliges Spiel</a></p>
+            <!--<p><a href="#" class="btn">Spieleliste</a></p>-->
+            <p><a href="http://wien.jungschar.at/spielen" class="btn">Infos zum Thema</a></p>
+        </div>
+
+        <hr>
+    {% endif %}
+
+    {% if games is not empty %}
+        <div id="games-list">
+            <div id="games-list-links">
+                <ul class="inline">
+                    {% for letter in 'a'..'z' %}
+                        <li id="games-list-link-{{ letter }}">{% if games[letter] is defined %}<a
+                                href="#games-list-{{ letter }}">{{ letter|upper }}</a>{% else %}{{ letter|upper }}{% endif %}
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% for group, groupedGames in games %}
+                <div class="pull-right clearfix"><a href="#top"><i class="icon-arrow-up"></i></a></div>
+                <h4 class="games-list-header">{{ group|upper }}</h4>
+                <a name="games-list-{{ group }}"></a>
+                <ul class="unstyled">
+                    {% for game in groupedGames %}
+                        <li>
+                            <a href="/spiel/{{ game.Thema|trim|url_encode }}">{{ game.Thema }}</a><br/><small>{{ game.Art }}</small>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="/js/waypoints.min.js"></script>
+    <script src="/js/waypoints-sticky.min.js"></script>
+    <script src="/bootstrap/js/bootstrap-typeahead.js"></script>
+    <script src="/bootstrap/js/bootstrap-collapse.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#games-list-links').waypoint('sticky');
+
+            $('.games-list-header').waypoint(function (direction) {
+                $('#games-list-links li').removeClass('strong');
+                $('#games-list-link-' + $(this).text().toLowerCase()).addClass('strong');
+            }, {offset: 50});
+
+            $('#search').typeahead({
+                source: function (query, process) {
+                    return $.get('/autocomplete', {query: query}, function (data) {
+                        return process(data.options);
+                    });
+                },
+                updater: function (item) {
+                    $('#search').val(item);
+                    $('#search-form').submit();
+                    return item;
+                },
+                sorter: function (items) {
+                    items.unshift(this.query);
+                    return items;
+                }
+            });
+        });
+    </script>
+{% endblock %}

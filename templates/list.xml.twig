@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<spiele_db>
+    <kategorien>
+        {% for type in gameTypes %}
+            <kategorie>{{ type }}</kategorie>
+        {% endfor %}
+    </kategorien>
+    <spiele>
+        {% for game in games %}
+            <spiel id="{{ game.ID }}">
+                <thema><![CDATA[{{ game.Thema }}]]> </thema>
+                <aufwand>{{ game.Aufwand }}</aufwand>
+                <beschreibung><![CDATA[{{ game.Langtext }}]]></beschreibung>
+                {% if game.Variante %}
+                    <variante> <![CDATA[{{ game.Variante }}]]></variante>
+                {% endif %}
+                {% if game.Material %}
+                    <material><![CDATA[{{ game.Material }}]]></material>
+                {% endif %}
+                <art>{{ game.Art }}</art>
+                <alter_min>{{ game.alter_unten }}</alter_min>
+                <alter_max>{{ game.alter_oben }}</alter_max>
+                <anzahl_min>{{ game.anzahl_unten }}</anzahl_min>
+                <anzahl_max>{{ game.anzahl_oben }}</anzahl_max>
+                {% if game.Video %}
+                    <video>{{ game.Video }}</video>
+                {% endif %}
+                <link>spiele.wien.jungschar.at/spiel/{{ game.Thema }}</link>
+            </spiel>
+        {% endfor %}
+    </spiele>
+</spiele_db>
